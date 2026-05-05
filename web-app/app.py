@@ -24,24 +24,24 @@ class User(UserMixin):
     pass
 
 @login_manager.user_loader
-def user_loader(user_email):
-    user_doc = mongo.users.find_one({"user_email": user_email})
+def user_loader(username):
+    user_doc = mongo.users.find_one({"username": username})
     if not user_doc:
         return None
     user = User()
-    user.id = user_email
+    user.id = username
     return user
 
 @login_manager.request_loader
 def request_loader(request):
-    user_email = request.form.get('username')
-    if not user_email:
+    username = request.form.get('username')
+    if not username:
         return None
-    user_doc = mongo.users.find_one({"user_email": user_email})
+    user_doc = mongo.users.find_one({"username": username})
     if not user_doc:
         return None
     user = User()
-    user.id = user_email
+    user.id = username
     return user
 
 def add_id(tasks):
@@ -65,8 +65,8 @@ def compute_status(due_date):
 def index():
     user = current_user.id
 
-    non_completed = add_id(list(mongo.assignments.find({"user_email": user, "status": {"$ne": "completed"}})))
-    completed = add_id(list(mongo.assignments.find({"user_email": user, "status": "completed"})))
+    non_completed = add_id(list(mongo.assignments.find({"username": user, "status": {"$ne": "completed"}})))
+    completed = add_id(list(mongo.assignments.find({"username": user, "status": "completed"})))
 
     priority_order = {"high": 0, "medium": 1, "low": 2}
 
@@ -101,16 +101,20 @@ def submit_new_task():
     data = request.json
 
     try:
+        user_doc = mongo.users.find_one({"username": current_user.id})
         ml_response = requests.post(ML_SERVICE_URL, json={
             "title": data.get("title"),
             "course": data.get("course"),
             "description": data.get("description"),
-            "due_date": data.get("date")
+            "due_date": data.get("date"),
+            "college": user_doc.get("college"),
+            "major": user_doc.get("major"),
+            "year": user_doc.get("year"),
         })
         ml_data = ml_response.json()
 
         mongo.assignments.insert_one({
-            "user_email": current_user.id,
+            "username": current_user.id,
             "title": data.get("title"),
             "course": data.get("course"),
             "description": data.get("description"),
@@ -142,7 +146,7 @@ def login():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    user_doc = mongo.users.find_one({"user_email": username})
+    user_doc = mongo.users.find_one({"username": username})
     if not user_doc or user_doc['password'] != password:
         return """<div>wrong username or password</div>
                 <a href="/login"> go back to login </a>"""
@@ -157,11 +161,17 @@ def register():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    if mongo.users.find_one({"user_email": username}):
+    if mongo.users.find_one({"username": username}):
         return """<div>username already exists</div>
                 <a href="/login"> go to login </a>"""
 
-    mongo.users.insert_one({"user_email": username, "password": password})
+    mongo.users.insert_one({
+        "username": username,
+        "password": password,
+        "college": request.form.get('college'),
+        "major": request.form.get('major'),
+        "year": request.form.get('year'),
+    })
     return redirect('/login')
 
 @app.route('/task/<task_id>')
@@ -208,10 +218,41 @@ def complete_task(task_id):
     )
     return redirect('/')
 
+@app.route('/uncomplete_task/<task_id>')
+def uncomplete_task(task_id):
+    task = mongo.assignments.find_one({"_id": ObjectId(task_id)})
+    mongo.assignments.update_one(
+        {"_id": ObjectId(task_id)},
+        {"$set": {
+            "completed": False,
+            "status": compute_status(task['due_date']),
+            "updated_at": datetime.now(timezone.utc),
+        }}
+    )
+    return redirect('/')
+
 @app.route('/delete_task/<task_id>')
 def delete_task(task_id):
     mongo.assignments.delete_one({"_id": ObjectId(task_id)})
     return redirect('/')
+
+@app.route('/settings', methods=['GET', 'POST'])
+@login_required
+def settings():
+    user_doc = mongo.users.find_one({"username": current_user.id})
+
+    if request.method == 'POST':
+        mongo.users.update_one(
+            {"username": current_user.id},
+            {"$set": {
+                "college": request.form.get('college'),
+                "major": request.form.get('major'),
+                "year": request.form.get('year'),
+            }}
+        )
+        return redirect('/settings')
+
+    return render_template('settings.html', user=user_doc)
 
 @app.route('/logout')
 def logout():
