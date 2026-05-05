@@ -38,7 +38,7 @@ def test_user_loader():
 
     with patch("app.mongo") as mock_mongo:
         mock_mongo.users.find_one.return_value = {
-            "user_email": "test@example.com",
+            "username": "test@example.com",
         }
         user = user_loader("test@example.com")
 
@@ -51,7 +51,7 @@ def test_request_loader():
 
     with patch("app.mongo") as mock_mongo:
         mock_mongo.users.find_one.return_value = {
-            "user_email": "test@example.com",
+            "username": "test@example.com",
         }
         user = request_loader(
             request=type(
@@ -94,7 +94,7 @@ def test_index_route(client, login_test_user):
                     "_id": ObjectId(),
                     "title": "Overdue Assignment",
                     "course": "Test Course",
-                    "user_email": "test@example.com",
+                    "username": "test@example.com",
                     "due_date": "2020-01-01",
                     "status": "overdue",
                 },
@@ -102,7 +102,7 @@ def test_index_route(client, login_test_user):
                     "_id": ObjectId(),
                     "title": "Due_Soon Assignment",
                     "course": "Test Course",
-                    "user_email": "test@example.com",
+                    "username": "test@example.com",
                     "due_date": "2026-05-05",
                     "status": "due_soon",
                 },
@@ -110,7 +110,7 @@ def test_index_route(client, login_test_user):
                     "_id": ObjectId(),
                     "title": "Upcoming Assignment",
                     "course": "Test Course",
-                    "user_email": "test@example.com",
+                    "username": "test@example.com",
                     "due_date": "2026-10-01",
                     "status": "upcoming",
                 },
@@ -154,7 +154,7 @@ def test_submit_new_task_route_success(client, login_test_user, sample_data):
 def test_login_success(client):
     with patch("app.mongo") as mock_mongo:
         mock_mongo.users.find_one.return_value = {
-            "user_email": "test@example.com",
+            "username": "test@example.com",
             "password": "testpassword",
         }
         response = client.post(
@@ -187,7 +187,7 @@ def test_register_success(client):
 def test_register_failure(client):
     with patch("app.mongo") as mock_mongo:
         mock_mongo.users.find_one.return_value = {
-            "user_email": "test@example.com",
+            "username": "test@example.com",
             "password": "testpassword",
         }
         response = client.post(
