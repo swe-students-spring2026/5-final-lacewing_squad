@@ -1,5 +1,6 @@
 import json
 import re
+from datetime import datetime
 from dotenv import load_dotenv
 from google import genai
 from google.genai import errors as genai_errors
@@ -22,7 +23,8 @@ PROMPT = """You are an academic workload estimator for college students. Given a
 Respond with ONLY valid JSON, no explanation."""
 
 def build_prompt(title, course, description, due_date):
-    return f"{PROMPT}\n\nTitle: {title}\nCourse: {course}\nDescription: {description}\nDue date: {due_date}"
+    days_until_due = (datetime.strptime(due_date, "%Y-%m-%d") - datetime.now()).days
+    return f"{PROMPT}\n\nTitle: {title}\nCourse: {course}\nDescription: {description}\nDue date: {due_date}\nDays until due: {days_until_due}"
 
 def analyze_assignment(title, course, description, due_date):
     client = genai.Client()
