@@ -21,6 +21,7 @@ A task tracker that helps students manage assignments by automatically predictin
 - [Hudhaifah Rehman](https://github.com/hrehman1)
 - [Hanxi Li](https://github.com/hanxili435)
 - [Grace Johnson](https://github.com/grace350)
+- [Faizan Shamsi](https://github.com/17faizan)
 
 ## Running the Application
 
