@@ -25,7 +25,10 @@ def test_analyze_route(mock_analyze_assignment, client):
         "title": "Final Project",
         "course": "Software Engineering",
         "description": "Finish Docker and CI/CD",
-        "due_date": "2026-05-05"
+        "due_date": "2026-05-05",
+        "college": "NYU",
+        "major": "Computer Science",
+        "year": "3",
     })
 
     assert response.status_code == 200
@@ -38,5 +41,8 @@ def test_analyze_route(mock_analyze_assignment, client):
         title="Final Project",
         course="Software Engineering",
         description="Finish Docker and CI/CD",
-        due_date="2026-05-05"
+        due_date="2026-05-05",
+        college="NYU",
+        major="Computer Science",
+        year="3",
     )

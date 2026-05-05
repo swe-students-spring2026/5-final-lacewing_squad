@@ -2,6 +2,13 @@ body{
     font-family: sans-serif;
 }
 
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 20px;
+}
+
 .add-task{
     border-radius: 10px;
     border: 2px dotted black;
@@ -77,4 +84,12 @@ body{
 
 .button-style:hover{
     background-color: #284453;
+}
+
+.delete-button{
+    background: #c0392b;
+}
+
+.delete-button:hover{
+    background-color: #7b2318;
 }
