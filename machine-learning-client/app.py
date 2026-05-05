@@ -14,7 +14,10 @@ def analyze():
         title=data.get('title', ''),
         course=data.get('course', ''),
         description=data.get('description', ''),
-        due_date=data.get('due_date', '')
+        due_date=data.get('due_date', ''),
+        college=data.get('college', ''),
+        major=data.get('major', ''),
+        year=data.get('year', ''),
     )
     return jsonify(result)
 
