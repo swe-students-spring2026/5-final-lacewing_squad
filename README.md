@@ -20,6 +20,7 @@ A task tracker that helps students manage assignments by automatically predictin
 - [Eddy Yue](https://github.com/YechengYueEddy)
 - [Hudhaifah Rehman](https://github.com/hrehman1)
 - [Hanxi Li](https://github.com/hanxili435)
+- [Grace Johnson](https://github.com/grace350)
 
 ## Running the Application
 
@@ -47,6 +48,7 @@ GOOGLE_API_KEY=your-google-api-key
 ```
 
 To get a **Google API key**:
+
 - Go to [Google AI Studio](https://aistudio.google.com/) and sign in
 - Click **Get API key**, then **Create API key**
 
@@ -57,6 +59,7 @@ docker-compose up --build
 ```
 
 This starts all three containers:
+
 - **Web App** at `http://localhost:5001`
 - **ML Client** at `http://localhost:5002`
 - **MongoDB** at `localhost:27017`
