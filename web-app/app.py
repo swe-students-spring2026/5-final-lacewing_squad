@@ -208,6 +208,11 @@ def complete_task(task_id):
     )
     return redirect('/')
 
+@app.route('/delete_task/<task_id>')
+def delete_task(task_id):
+    mongo.assignments.delete_one({"_id": ObjectId(task_id)})
+    return redirect('/')
+
 @app.route('/logout')
 def logout():
     logout_user()
